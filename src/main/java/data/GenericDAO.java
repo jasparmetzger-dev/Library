@@ -1,8 +1,5 @@
 package data;
 
-import model.genericObj;
-import util.DbConnection;
-
 import java.io.Serializable;
 import java.sql.*;
 import java.util.ArrayList;
@@ -13,7 +10,7 @@ public abstract class GenericDAO <T, ID extends Serializable> {
     protected abstract String getDB_URL();
     protected abstract String getTable();
     protected abstract List<String> getColumnNames();
-    protected abstract T mapResults(ResultSet rs);
+    protected abstract T mapResults(ResultSet rs) throws SQLException;
 
 
 
