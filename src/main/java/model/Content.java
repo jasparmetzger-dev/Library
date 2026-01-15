@@ -4,18 +4,14 @@ import java.util.List;
 
 public class Content {
 
-    List<String> chapters;
+    String chapters;
 
-    public Content(List<String> chapters) {
+    public Content(String chapters) {
         this.chapters = chapters;
     }
 
-    public void add(int chapter, String contentOfChapter) {
-        if (chapter > chapters.size()) {
-            chapters.add(contentOfChapter);
-        } else {
-            chapters.set(chapter, contentOfChapter);
-        }
+    public void add(String newText) {
+        this.chapters = chapters + newText;
     }
 
 }

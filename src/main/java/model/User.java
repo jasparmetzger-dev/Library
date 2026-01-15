@@ -1,12 +1,11 @@
 package model;
 
-import java.beans.Encoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
-public class User {
+public class User extends GenericEntity {
     private int id;
     public String username;
     protected String encodedPassword;

@@ -1,5 +1,6 @@
 package model;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,10 +22,11 @@ public class Author extends User {
     }
 
     public void publish(Book b) {
-        publishedBookIds.add(b.id);
-        b.published = Runtime.getRuntime();
+        publishedBookIds.add(b.getId());
+        b.published = LocalDate.now().toString();
     }
-    public Book write (String title, List<String> chapters) {
-        return new Book(title, this.getId(), new Content(chapters));}
+    public Book write (String title, String text) {
+        return new Book(title, this.getId(), new Content(text));
+    }
 
 }

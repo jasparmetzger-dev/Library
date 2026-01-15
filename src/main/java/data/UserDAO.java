@@ -10,35 +10,22 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDAO extends GenericDAO{
+public class UserDAO extends GenericDAO<User, Integer>{
 
-    public UserDAO(Class type) {
-        super(type);
+    public UserDAO() {
+        super(User.class);
     }
 
 
     public int insert(User u) throws SQLException {
         String sql = """
-                INSERT INTO USERS (id, username, password, read_books)
-                VALUES ( ? , ? , ? , ? )
+                INSERT INTO USERS (username, password, read_books)
+                VALUES ( ? , ? , ? )
                 """;
         String readBookString = Conversions.makeIntLstStr(u.getReadBooks());
 
-        return executeUpdate(sql, u.getId(), u.username, u.getEncodedPassword(), readBookString);
+        return executeUpdate(sql, u.username, u.getEncodedPassword(), readBookString);
     }
-    public int delete(User u) throws SQLException {
-        String sql = "DELETE FROM USERS WHERE id = " + u.getId();
-        try (Connection conn = connect();
-             Statement stmt = conn.createStatement())
-        {
-            return stmt.executeUpdate(sql);
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
 
     protected String getDB_URL() {
         return "jdbc:sqlite:mylibrary.db";
@@ -47,15 +34,11 @@ public class UserDAO extends GenericDAO{
         return "USERS";
     }
     protected List<String> getColumnNames() {
-        List<String> cols = new ArrayList<>();
-        cols.add("id"); //int
-        cols.add("username"); //str
-        cols.add("password"); //str
-        cols.add("read_books"); //str
-        return cols;
+        //              int     str         str         str (id1,id2...)
+        return List.of("id", "username", "password", "read_books");
     }
 
-    protected Object mapResults(ResultSet rs) throws SQLException {
+    protected User mapResults(ResultSet rs) throws SQLException {
         return new User(
                 rs.getInt("id"),
                 rs.getString("username"),
@@ -63,6 +46,5 @@ public class UserDAO extends GenericDAO{
                 Conversions.makeStrIntLst(rs.getString("read_books"))
         );
     }
-
 
 }

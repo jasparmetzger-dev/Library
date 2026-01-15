@@ -1,11 +1,13 @@
 package data;
 
+import model.GenericEntity;
+
 import java.io.Serializable;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class GenericDAO <T, ID extends Serializable> {
+public abstract class GenericDAO <T extends GenericEntity, ID extends Serializable> {
 
     protected abstract String getDB_URL();
     protected abstract String getTable();
@@ -53,6 +55,19 @@ public abstract class GenericDAO <T, ID extends Serializable> {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public int delete(T t) throws SQLException {
+        String sql = "DELETE FROM USERS WHERE id = " + t.getId();
+        try (Connection conn = connect();
+             Statement stmt = conn.createStatement())
+        {
+            return stmt.executeUpdate(sql);
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     public Integer executeUpdate(String sql, Object... params) throws SQLException {
