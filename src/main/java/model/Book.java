@@ -11,6 +11,7 @@ public class Book extends GenericEntity{
         this.title = title;
         this.authorId = author;
         this.content = content;
+        this.published = "0000-00-00";
     }
     public Book(int id, String title, int author,String published, Content content) {
         this.id = id;

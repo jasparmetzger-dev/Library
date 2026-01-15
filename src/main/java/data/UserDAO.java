@@ -3,11 +3,7 @@ package data;
 import model.User;
 import util.Conversions;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
+import java.sql.*;
 import java.util.List;
 
 public class UserDAO extends GenericDAO<User, Integer>{
