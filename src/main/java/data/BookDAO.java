@@ -2,6 +2,8 @@ package data;
 
 import model.Book;
 import model.Content;
+import model.User;
+import util.Conversions;
 
 
 import java.sql.*;
@@ -15,11 +17,50 @@ public class BookDAO extends GenericDAO<Book, Integer>{
 
     public int insert(Book b) throws SQLException {
         String sql = """
-                INSERT INTO BOOKS (title, author_id, published, content)
+                INSERT INTO BOOKS (title, author_id, published, content, status)
                 VALUES ( ? , ? , ? , ? , ? )
                 """;
 
-        return executeUpdate(sql, b.getId(), b.title, b.getAuthorId(), b.published, b.content);
+        try (Connection conn = connect();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+        ) {
+            stmt.setString(1, b.title);
+            stmt.setInt(2, b.getAuthorId());
+            stmt.setDate(3, Date.valueOf(b.published));
+            stmt.setString(4, b.getContent());
+            stmt.setString(5, Conversions.makeStatusString(b.getStatus()));
+
+            return stmt.executeUpdate();
+
+        }
+    }
+    public int update(Book b) throws SQLException {
+        String sql = """
+                UPDATE BOOKS SET
+                title = ? ,
+                author_id = ? ,
+                published = ? ,
+                content = ? ,
+                status = ?,
+                WHERE id = ?
+                """;
+
+        try (Connection conn = connect();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+        )
+        {
+            stmt.setString(1, b.title);
+            stmt.setInt(2, b.getAuthorId());
+            stmt.setDate(3, Date.valueOf(b.published));
+            stmt.setString(4, b.getContent());
+            stmt.setString(5, Conversions.makeStatusString(b.getStatus()));
+            stmt.setInt(6, b.getId());
+
+            return stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -31,8 +72,8 @@ public class BookDAO extends GenericDAO<Book, Integer>{
         return "BOOKS";
     }
     protected List<String> getColumnNames() {
-        //              int     str       int          date        str
-        return List.of("id", "title", "author_id", "published", "content");
+        //              int     str       int          date        str      str
+        return List.of("id", "title", "author_id", "published", "content", "status");
     }
 
     protected Book mapResults(ResultSet rs) throws SQLException {
@@ -41,7 +82,8 @@ public class BookDAO extends GenericDAO<Book, Integer>{
                 rs.getString("title"),
                 rs.getInt("author_id"),
                 rs.getDate("published").toString(),
-                new Content(rs.getString("content"))
+                new Content(rs.getString("content")),
+                Conversions.makeStatus(rs.getString("status"))
         );
     }
 }

@@ -18,10 +18,47 @@ public class UserDAO extends GenericDAO<User, Integer>{
                 INSERT INTO USERS (username, password, read_books)
                 VALUES ( ? , ? , ? )
                 """;
-        String readBookString = Conversions.makeIntLstStr(u.getReadBooks());
 
-        return executeUpdate(sql, u.username, u.getEncodedPassword(), readBookString);
+        try (Connection conn = connect();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+        )
+        {
+            stmt.setString(1, u.username);
+            stmt.setString(2, u.getEncodedPassword());
+            stmt.setString(3, Conversions.makeIntLstStr(u.getReadBooks()));
+
+            return stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
+
+    public int update(User u) throws SQLException {
+        String sql = """
+                UPDATE USERS SET
+                username = ? ,
+                password = ? ,
+                read_books = ?
+                WHERE id = ?
+                """;
+
+        try (Connection conn = connect();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             )
+        {
+            stmt.setString(1, u.username);
+            stmt.setString(2, u.getEncodedPassword());
+            stmt.setString(3, Conversions.makeIntLstStr(u.getReadBooks()));
+            stmt.setInt(4, u.getId());
+
+            return stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     protected String getDB_URL() {
         return "jdbc:sqlite:mylibrary.db";
